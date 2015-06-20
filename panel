@@ -1,0 +1,56 @@
+#! /bin/sh
+
+if [ $(pgrep -cx panel) -gt 1 ] ; then
+	printf "%s\n" "The panel is already running." >&2
+	exit 1
+fi
+
+trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
+
+[ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
+mkfifo "$PANEL_FIFO"
+. panel_colors
+
+bspc config top_padding $PANEL_HEIGHT
+bspc control --subscribe > "$PANEL_FIFO" &
+xtitle -sf 'T%s' > "$PANEL_FIFO" &
+
+while [[ true ]]; do
+	vol="$( amixer get Master | tail -1| awk '{print $4}' | tr -d '[]')"
+	printf "V%s\n" "$vol" > "$PANEL_FIFO"
+	sleep 0.5s;
+done &
+
+
+while [[ true ]]; do
+	cur_battery="$(acpi | awk '{print $4}' | tr -d ',')"
+	printf "B %s\n" "${cur_battery}" > "$PANEL_FIFO"
+	sleep 20s;
+done &
+
+while [[ true ]]; do
+	#add 0 to $2 to make int 
+	printf "TE%2s\n" "$(sensors | grep -i 'Physical' | awk '{print $4+0}')" > "$PANEL_FIFO"
+	sleep 5s;
+done &
+
+
+# while [[ true ]]; do
+# 	#add 0 to $2 to make int 
+# 	echo "%{A:firefox:}%{A} %{A:urxvt -e ncmpcpp:}%{A} %{A:pcmanfm:}%{A} %{A:libreoffice:}%{A} %{A:urxvt:}%{A} $fg"
+# 	printf "TE%2s\n" "$(sensors | grep -i 'Physical' | awk '{print $4+0}')" > "$PANEL_FIFO"
+# 	sleep 5s;
+# done &
+
+while [[ true ]]; do
+	printf "S%s\n" "$(date +"%d.%m %H:%M")" > "$PANEL_FIFO"
+	sleep 30s;
+done &
+
+
+
+font="Source Code Pro-9"
+icon="FontAwesome-9"
+
+cat "$PANEL_FIFO" | panel_bar | lemonbar -g "$BARWIDTH"x"$BARHEIGHT"+"$EDGEWIDTH" -f "$font" -f "$icon" -F "$COLOR_FOREGROUND" -B "$COLOR_BACKGROUND"  -u "$UNDERLINE_WIDTH" &
+wait
