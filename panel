@@ -18,6 +18,8 @@ xtitle -sf 'T%s' > "$PANEL_FIFO" &
 while [[ true ]]; do
 	vol="$( amixer get Master | tail -1| awk '{print $4}' | tr -d '[]')"
 	printf "V%s\n" "$vol" > "$PANEL_FIFO"
+	apps="%{A:firefox:}%{A} %{A:thunar:}%{A} %{A:subl3:}%{A} %{A:terminator:}%{A} %{F#FFddccaa}"
+	printf "A%s\n" "$apps"> "$PANEL_FIFO"
 	sleep 0.5s;
 done &
 
@@ -26,6 +28,25 @@ while [[ true ]]; do
 	cur_battery="$(acpi | awk '{print $4}' | tr -d ',')"
 	printf "B %s\n" "${cur_battery}" > "$PANEL_FIFO"
 	sleep 20s;
+done &
+
+while [[ true ]]; do
+	ln="$(xkb-switch)"
+	printf "L %.2s\n" "${ln}" > "$PANEL_FIFO"
+	if [ "`bspc query -d focused -W`" ]
+  	then
+    printf "X %s\n" "%{A:bspc window -c:}%{A}" > "$PANEL_FIFO"
+	else
+		printf "X \n" > "$PANEL_FIFO"
+  	fi
+
+  	if [ "`ps -e | grep trayer`" ]
+  	then
+    printf "R%s\n" "%{A:pkill -x trayer:}-%{A}" > "$PANEL_FIFO"
+	else
+	printf "R%s\n" "%{A:trayer --edge top --align right  --widthtype request --width 30 --height 18 --transparent true --alpha 95 --tint 0x95FFFFFF --distance 390 --distancefrom right:}+%{A}" > "$PANEL_FIFO"
+  	fi
+	sleep 0.5s;
 done &
 
 while [[ true ]]; do
@@ -43,14 +64,27 @@ done &
 # done &
 
 while [[ true ]]; do
-	printf "S%s\n" "$(date +"%d.%m %H:%M")" > "$PANEL_FIFO"
+	printf "S%s\n" "$(date +"%d.%m")" > "$PANEL_FIFO"
+	printf "C%s %s\n" "$(date -d "+3 hour" +"%R")" "$(date +"%R")" > "$PANEL_FIFO"
 	sleep 30s;
 done &
 
-
+while [[ true ]]; do
+	weatherURL='http://www.accuweather.com/en/cz/prague/125594/weather-forecast/125594'
+    weth=$(wget -q -T 1 -O- "$weatherURL" | awk -F\' '/acm_RecentLocationsCarousel\.push/{print $12"°C" }'| head -1)
+    printf "E%s\n" "$weth" > "$PANEL_FIFO"
+    updates=$(eval yaourt -Qu | wc --lines)
+    command='terminator -e "yaourt -Syua"'
+    printf "Y%s\n" "%{A:$command:}$updates %{A}" > "$PANEL_FIFO"
+    sleep 1800s;
+done &
+# AC='%{A:'           # start click area
+# AB=':}'             # end click area cmd
+# AE='%{A}'
 
 font="Source Code Pro-9"
 icon="FontAwesome-9"
 
-cat "$PANEL_FIFO" | panel_bar | lemonbar -g "$BARWIDTH"x"$BARHEIGHT"+"$EDGEWIDTH" -f "$font" -f "$icon" -F "$COLOR_FOREGROUND" -B "$COLOR_BACKGROUND"  -u "$UNDERLINE_WIDTH" &
+cat "$PANEL_FIFO" | panel_bar | lemonbar -g "$BARWIDTH"x"$BARHEIGHT"+"$EDGEWIDTH" -f "$font" -f "$icon" -F "$COLOR_FOREGROUND" -B "$COLOR_BACKGROUND"  -u "$UNDERLINE_WIDTH" | sh &
+
 wait

@@ -3,85 +3,93 @@
 # Example panel for LemonBoy's bar
 
 . panel_colors
-menu="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG}%{A:thunar:} %{A}%{B-}%{F-}"
+menu='%{F$COLOR_BLUE}%{A:thunar:} %{A}%{A:thunar:}%{A}%{A:firefox:} %{A}%{A:subl3:} %{A}%{A:dropbox:} %{A}%{F-}'
 num_mon=$(bspc query -M | wc -l)
+pow='%{B$COLOR_STATUS_BG}%{A:bat:}%{F$COLOR_BLUE}%{F-}%{A}%{B-}'
+cal='%{B$COLOR_STATUS_BG}%{A:cali:}%{F$COLOR_BLUE} %{F-}%{A}%{B-}'
+lswtch='%{B$COLOR_STATUS_BG}%{A:xkb-switch -n:}%{F$COLOR_BLUE}%{F-}%{A}%{B-}'
 while read -r line ; do
 	case $line in
 		TE*)
 			# Sensor Output
-			temp="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG}%{F$COLOR_RED} %{F-}${line:2:2} %{B-}%{F-}"
+			temp="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line:2:2} %{B-}%{F-}"
+			;;
+		R*)
+			# tray
+			tr="${line#?}"
+			;;
+		L*)
+			# Sensor Output
+			lang="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG}${line#?} %{B-}%{F-}"
 			;;
 		S*)
 			# clock output
-			sys_infos="%{F$COLOR_BLUE} %{F-}%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}${line#?}%{B-}%{F-}"
+			date="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}${line#?}%{B-}%{F-}"
+			;;
+		C*)
+
+			clock="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}  ${line#?}%{B-}%{F-}"
+			;;
+		X*)
+			# title X
+			wkill="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}${line#?}%{B-}%{F-}"
 			;;
 		B*)
 			#Battery Output
-			bat="%{F$COLOR_STATUS_FG}%{F$COLOR_GREEN}%{F-}%{B$COLOR_STATUS_BG}${line#?} %{B-} %{F-}"
+			bat="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG}${line#?} %{B-} %{F-}"
 			;;
 		T*)
 			# xtitle output
 			title="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG} ${line:1:50} %{B-}%{F-}"
 			;;
-
+		A*)
+			apps="${line#?}"
+			;;
+		Y*)
+			ya="${line#?}"
+			;;
 		V*)
 			#vol
 			vol="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}${line#?} %{B-}%{F-}"
 			;;
-		W*)
-			# bspwm internal state
-			wm_infos=""
-			IFS=':'
-			set -- ${line#?}
-			while [ $# -gt 0 ] ; do
-				item=$1
-				name=${item#?}
-				case $item in
-					M*)
-						# active monitor
-						if [ $num_mon -gt 1 ] ; then
-							wm_infos="${wm_infos}%{F$COLOR_ACTIVE_MONITOR_FG}%{B$COLOR_ACTIVE_MONITOR_BG} ${name} %{B-}%{F-}  "
-						fi
-						;;
-					m*)
-						# inactive monitor
-						if [ $num_mon -gt 1 ] ; then
-							wm_infos="${wm_infos}%{F$COLOR_INACTIVE_MONITOR_FG}%{B$COLOR_INACTIVE_MONITOR_BG} ${name} %{B-}%{F-}  "
-						fi
-						;;
-					O*)
-						# focused occupied desktop
-						wm_infos="${wm_infos}%{F$COLOR_FOCUSED_OCCUPIED_FG}%{B$COLOR_FOCUSED_OCCUPIED_BG}%{U$COLOR_FOREGROUND}%{+u} ${name} %{-u}%{B-}%{F-}"
-						;;
-					F*)
-						# focused free desktop
-						wm_infos="${wm_infos}%{F$COLOR_FOCUSED_FREE_FG}%{B$COLOR_FOCUSED_FREE_BG}%{U$COLOR_FOREGROUND}%{+u} ${name} %{-u}%{B-}%{F-}"
-						;;
-					U*)
-						# focused urgent desktop
-						wm_infos="${wm_infos}%{F$COLOR_FOCUSED_URGENT_FG}%{B$COLOR_FOCUSED_URGENT_BG}%{U$COLOR_FOREGROUND}%{+u} ${name} %{-u}%{B-}%{F-}"
-						;;
-					o*)
-						# occupied desktop
-						wm_infos="${wm_infos}%{F$COLOR_OCCUPIED_FG}%{B$COLOR_OCCUPIED_BG} ${name} %{B-}%{F-}"
-						;;
-					f*)
-						# free desktop
-						wm_infos="${wm_infos}%{F$COLOR_FREE_FG}%{B$COLOR_FREE_BG} ${name} %{B-}%{F-}"
-						;;
-					u*)
-						# urgent desktop
-						wm_infos="${wm_infos}%{F$COLOR_URGENT_FG}%{B$COLOR_URGENT_BG} ${name} %{B-}%{F-}"
-						;;
-					L*)
-						# layout
-						wm_infos="${wm_infos} %{F$COLOR_LAYOUT_FG}%{B$COLOR_LAYOUT_BG} ${name} %{B-}%{F-}"
-						;;
-				esac
-				shift
-			done
+		E*)
+			#vol
+			weth="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}${line#?} %{B-}%{F-}"
 			;;
+		W*)
+        wm_infos=""
+        IFS=':'
+        set -- ${line#?}
+        while [ $# -gt 0 ] ; do
+          item=$1
+          name=${item#?}
+          desk=" $name "
+          case $item in
+            O*)
+              # focused occupied desktop
+              wm_infos="$wm_infos%{F$color_01}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+            F*)
+              # focused empty desktop
+              wm_infos="$wm_infos%{F$color_02}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+            U*)
+              # focused urgent desktop
+              wm_infos="$wm_infos%{F$color_03}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+            o*)
+              # occupied desktop
+              wm_infos="$wm_infos%{F$color_04}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+            f*)
+              # free desktop
+              wm_infos="$wm_infos%{F$color_05}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+            u*)
+              # urgent desktop
+              wm_infos="$wm_infos%{F$color_06}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+            m*|M*)
+              # monitor seperator
+              wm_infos="$wm_infos%{F-}  " ;;
+          esac
+          shift
+        done ;;
 	esac
-	# printf "%s\n" "%{l}${title}%{c}${wm_infos}%{r}${vol}${temp}${bat}${menu}${sys_infos}"
-	printf "%s\n" "%{l}${title}${icon}%{c}${wm_infos}%{r}${vol}${temp}${bat}${sys_infos}"
+	# printf "%s\n" "%{l}${title}${icon}%{c}${wm_infos}${apps}%{r}${vol}${temp}${pow}${bat}${cal}${sys_infos}"
+	printf "%s\n" "%{l}${title}${wkill}${icon}%{c}${wm_infos} ${menu}%{r}${vol}${temp}${pow}${bat}${weth}${ya}${lswtch}${lang}${cal}${date}${clock}${tr}"
 done
