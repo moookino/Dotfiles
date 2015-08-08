@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# dzen2 pop-up calendar
+# (c) 2007, by Robert Manea
+#
+
+TODAY=$(expr `date +'%d'` + 0)
+MONTH=`date +'%m'`
+YEAR=`date +'%Y'`
+LINES=$(cal -m | wc -l)
+LINES=$((LINES + 2))
+(
+#date +'%A, %d %b %Y %H:%M'
+date +'^bg(#FFFFFF) '
+date +''
+# current month, highlight header and today
+cal -m | sed -r -e "1,2 s/.*/^fg(#60b48a)&^fg()/"  -e "s/(^| )($TODAY)($| )/\1^bg(#FFFFFF)^fg(#94bfff)\2^fg()^bg()\3/") | dzen2 -x 1255 -y 0 -w 200 -h 18 -l $LINES -sa c -p -e 'onstart=uncollapse,hide;leavetitle=exit;button3=exit;button1=exit;' -fg "#A3A6AB" -bg "#FFFFFF" -tw 6 -fn 'Source Code Pro-9'
+)
