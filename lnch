@@ -1,0 +1,6 @@
+#!/bin/sh
+case "`xkb-switch -p`" in
+  us   ) xkb-switch -s ru;;
+  ru   ) xkb-switch -s us;;
+  *    ) xkb-switch -s us;;
+esac  # Допускается указыватль диапазоны символов в [квадратных скобках].

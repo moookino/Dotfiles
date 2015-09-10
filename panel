@@ -25,8 +25,18 @@ done &
 
 
 while [[ true ]]; do
-	cur_battery="$(acpi | awk '{print $4}' | tr -d ',')"
-	printf "B %s\n" "${cur_battery}" > "$PANEL_FIFO"
+	cur_battery="$(acpi | awk '{print $4}' | tr -d ',%')"
+if [ "$cur_battery" -ge 0 ] && [ "$cur_battery" -le 15 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "$PANEL_FIFO"
+elif [ "$cur_battery" -ge 16 ] &&  [ "$cur_battery" -le 25 ]; then
+printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "$PANEL_FIFO"
+elif [ "$cur_battery" -ge 26 ] &&  [ "$cur_battery" -le 50 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "$PANEL_FIFO"
+elif [ "$cur_battery" -ge 51 ] &&  [ "$cur_battery" -le 75 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "$PANEL_FIFO"
+elif [ "$cur_battery" -ge 76 ] &&  [ "$cur_battery" -le 100 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "$PANEL_FIFO"
+fi
 	sleep 20s;
 done &
 
@@ -40,11 +50,11 @@ while [[ true ]]; do
 		printf "X \n" > "$PANEL_FIFO"
   	fi
 
-  	if [ "`ps -e | grep trayer`" ]
+  	if [[ -n $(pgrep trayer) ]]; 
   	then
-    printf "R%s\n" "%{A:pkill -x trayer:}-%{A}" > "$PANEL_FIFO"
+    printf "R%s\n" " %{A:tra:}%{A}" > "$PANEL_FIFO"
 	else
-	printf "R%s\n" "%{A:trayer --edge top --align right  --widthtype request --width 30 --height 18 --transparent true --alpha 95 --tint 0x95FFFFFF --distance 390 --distancefrom right:}+%{A}" > "$PANEL_FIFO"
+	printf "R%s\n" " %{A:tra:}%{A}" > "$PANEL_FIFO"
   	fi
 	sleep 0.5s;
 done &
@@ -83,8 +93,8 @@ done &
 # AE='%{A}'
 
 font="Source Code Pro-9"
-icon="FontAwesome-9"
+icon="FontAwesome-11"
 
-cat "$PANEL_FIFO" | panel_bar | lemonbar -g "$BARWIDTH"x"$BARHEIGHT"+"$EDGEWIDTH" -f "$font" -f "$icon" -F "$COLOR_FOREGROUND" -B "$COLOR_BACKGROUND"  -u "$UNDERLINE_WIDTH" | sh &
+cat "$PANEL_FIFO" | panel_bar | lemonbar -g "$BARWIDTH"x"$BARHEIGHT"+"$EDGEWIDTH" -f "$font" -f "$icon" -F "$COLOR_FOREGROUND" -B "$COLOR_BACKGROUND"  -u "$UNDERLINE_WIDTH" | while read line; do eval "$line"; done 
 
 wait

@@ -3,20 +3,21 @@
 # Example panel for LemonBoy's bar
 
 . panel_colors
-menu='%{F$COLOR_BLUE}%{A:thunar:} %{A}%{A:thunar:}%{A}%{A:firefox:} %{A}%{A:subl3:} %{A}%{A:dropbox:} %{A}%{F-}'
+menu='%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG}%{A:thunar:} %{A}%{A:thunar:}%{A}%{A:firefox:} %{A}%{A:subl3:} %{A}%{A:dropbox:} %{A} %{B-}%{F-}'
 num_mon=$(bspc query -M | wc -l)
-pow='%{B$COLOR_STATUS_BG}%{A:bat:}%{F$COLOR_BLUE}%{F-}%{A}%{B-}'
-cal='%{B$COLOR_STATUS_BG}%{A:cali:}%{F$COLOR_BLUE} %{F-}%{A}%{B-}'
-lswtch='%{B$COLOR_STATUS_BG}%{A:xkb-switch -n:}%{F$COLOR_BLUE}%{F-}%{A}%{B-}'
+cal='%{A:cali:} %{A}'
+lswtch='%{A:xkb-switch -n:}%{A}'
 while read -r line ; do
 	case $line in
 		TE*)
 			# Sensor Output
 			temp="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line:2:2} %{B-}%{F-}"
+			size+=${#temp}
 			;;
 		R*)
 			# tray
 			tr="${line#?}"
+			size+=${#tr}
 			;;
 		L*)
 			# Sensor Output
@@ -67,7 +68,7 @@ while read -r line ; do
           case $item in
             O*)
               # focused occupied desktop
-              wm_infos="$wm_infos%{F$color_01}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F${color_01}}%{A:bspc desktop -f $name:}$desk%{A}" ;;
             F*)
               # focused empty desktop
               wm_infos="$wm_infos%{F$color_02}%{A:bspc desktop -f $name:}$desk%{A}" ;;
@@ -91,5 +92,6 @@ while read -r line ; do
         done ;;
 	esac
 	# printf "%s\n" "%{l}${title}${icon}%{c}${wm_infos}${apps}%{r}${vol}${temp}${pow}${bat}${cal}${sys_infos}"
-	printf "%s\n" "%{l}${title}${wkill}${icon}%{c}${wm_infos} ${menu}%{r}${vol}${temp}${pow}${bat}${weth}${ya}${lswtch}${lang}${cal}${date}${clock}${tr}"
+	# echo $(echo ${vol}${temp}${pow}${bat}${weth}${ya}${lswtch}${lang}${cal}${date}${clock}${tr} | wc -m)
+	printf "%s\n" "%{l}${title}${wkill}${icon}%{c}${wm_infos} ${menu}%{r}${vol}${temp}${bat}${weth}${ya}${lswtch}${lang}${cal}${date}${clock}${tr}"
 done

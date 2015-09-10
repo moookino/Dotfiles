@@ -39,13 +39,13 @@ COLOR_RED='#FFF3A6AB'
 
 
 ## colors, in the format "#<alpha><rr><gg><bb>" ##
-color_fg="#FF34322E"        # bar foreground
-color_bg="#95ffffff"        # bar background
-color_ic="#FF34322E"        # icon color
+color_fg='#FF34322E'        # bar foreground
+color_bg='#95FFFFFF'        # bar background
+color_ic='#FF34322E'        # icon color
 # colors for workspaces
-color_01="#FF34322E"        # focused & occupied
-color_02="#FF34322E"        # focused & empty
-color_03="#ffff0000"        # focused & urgent
-color_04="#ffffffff"        # unfocused & empty
-color_05="#FFA3A6AB"        # unfocused & occupied
-color_06="#ffff0000"        # unfocused & urgent
+color_01='#FF34322E'        # focused & occupied
+color_02='#FF34322E'        # focused & empty
+color_03='#FFFF0000'        # focused & urgent
+color_04='#FFFFFFFF'        # unfocused & empty
+color_05='#FFA3A6AB'        # unfocused & occupied
+color_06='#ffff0000'        # unfocused & urgent

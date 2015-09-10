@@ -1,0 +1,8 @@
+
+#!/bin/zsh
+
+if [[ -n $(pgrep trayer) ]]; then
+  killall trayer
+else
+  trayer --edge top --align right  --widthtype request --width 30 --height 18 --transparent true --alpha 95 --tint 0x95FFFFFF --distance 350 --distancefrom right 2>/dev/null &|
+fi
