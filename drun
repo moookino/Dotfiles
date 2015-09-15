@@ -1,8 +1,10 @@
 #!/bin/sh
 
 # Figure out current screen size
-SCREENWIDTH=$(xrandr -q | grep Screen | awk '{print $8}')
-SCREENHEIGHT=$(xrandr -q | grep Screen | awk '{print $10}' | sed s/,//)
+# SCREENWIDTH=$(xrandr -q | grep Screen | awk '{print $8}')
+SCREENHEIGHT=$(bspc query -T -m $(bspc query -M -d focused) | grep -oE "[0-9]{2,6}" | head -n 2 | tail -1)
+# SCREENHEIGHT=$(xrandr -q | grep Screen | awk '{print $10}' | sed s/,//)
+SCREENWIDTH=$(bspc query -T -m $(bspc query -M -d focused) | grep -oE "[0-9]{2,6}" | head -n 1)
 
 # How close to the screen edges do we begin/end?
 EDGEWIDTH=50

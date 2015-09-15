@@ -1,17 +1,18 @@
-#! /bin/sh
+#!/usr/bin/env bash
 #
 # Example panel for LemonBoy's bar
 
 . panel_colors
-menu='%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG}%{A:thunar:} %{A}%{A:thunar:}%{A}%{A:firefox:} %{A}%{A:subl3:} %{A}%{A:dropbox:} %{A} %{B-}%{F-}'
+menu='%{F$COLOR_FG}%{B$COLOR_BG}%{A:thunar:} %{A}%{A:thunar:}%{A}%{A:firefox:} %{A}%{A:subl3:} %{A}%{A:dropbox:} %{A} %{B-}%{F-}'
 num_mon=$(bspc query -M | wc -l)
 cal='%{A:cali:} %{A}'
 lswtch='%{A:xkb-switch -n:}%{A}'
+
 while read -r line ; do
 	case $line in
 		TE*)
 			# Sensor Output
-			temp="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line:2:2} %{B-}%{F-}"
+			temp="%{F$COLOR_FG}%{B$COLOR_BG} ${line:2:2} %{B-}%{F-}"
 			size+=${#temp}
 			;;
 		R*)
@@ -21,27 +22,27 @@ while read -r line ; do
 			;;
 		L*)
 			# Sensor Output
-			lang="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG}${line#?} %{B-}%{F-}"
+			lang="%{F$COLOR_FG}%{B$COLOR_BG}${line#?} %{B-}%{F-}"
 			;;
 		S*)
 			# clock output
-			date="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}${line#?}%{B-}%{F-}"
+			date="%{F$COLOR_FG}%{B$COLOR_BG}${line#?}%{B-}%{F-}"
 			;;
 		C*)
 
-			clock="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}  ${line#?}%{B-}%{F-}"
+			clock="%{F$COLOR_FG}%{B$COLOR_BG}  ${line#?}%{B-}%{F-}"
 			;;
 		X*)
-			# title X
-			wkill="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}${line#?}%{B-}%{F-}"
+
+			wkill="%{F$COLOR_FG}%{B$COLOR_BG}${line#?}%{B-}%{F-}"
 			;;
 		B*)
 			#Battery Output
-			bat="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG}${line#?} %{B-} %{F-}"
+			bat="%{F$COLOR_FG}%{B$COLOR_BG}${line#?} %{B-}%{F-}"
 			;;
 		T*)
 			# xtitle output
-			title="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG} ${line:1:50} %{B-}%{F-}"
+			title="%{F$COLOR_04}%{B$COLOR_05}${line#?}%{B-}%{F-}"
 			;;
 		A*)
 			apps="${line#?}"
@@ -51,39 +52,39 @@ while read -r line ; do
 			;;
 		V*)
 			#vol
-			vol="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}${line#?} %{B-}%{F-}"
+			vol="%{F$COLOR_FG}%{B$COLOR_BG}${line#?} %{B-}%{F-}"
 			;;
 		E*)
 			#vol
-			weth="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG}${line#?} %{B-}%{F-}"
+			weth="%{F$COLOR_FG}%{B$COLOR_BG}${line#?} %{B-}%{F-}"
 			;;
 		W*)
         wm_infos=""
         IFS=':'
         set -- ${line#?}
         while [ $# -gt 0 ] ; do
-          item=$1
+          item=${1}
           name=${item#?}
           desk=" $name "
           case $item in
             O*)
               # focused occupied desktop
-              wm_infos="$wm_infos%{F${color_01}}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F${COLOR_01}}%{A:bspc desktop -f $name:}$desk%{A}" ;;
             F*)
               # focused empty desktop
-              wm_infos="$wm_infos%{F$color_02}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F$COLOR_02}%{A:bspc desktop -f $name:}$desk%{A}" ;;
             U*)
               # focused urgent desktop
-              wm_infos="$wm_infos%{F$color_03}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F$COLOR_03}%{A:bspc desktop -f $name:}$desk%{A}" ;;
             o*)
               # occupied desktop
-              wm_infos="$wm_infos%{F$color_04}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F$COLOR_04}%{A:bspc desktop -f $name:}$desk%{A}" ;;
             f*)
               # free desktop
-              wm_infos="$wm_infos%{F$color_05}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F$COLOR_05}%{A:bspc desktop -f $name:}$desk%{A}" ;;
             u*)
               # urgent desktop
-              wm_infos="$wm_infos%{F$color_06}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F$COLOR_06}%{A:bspc desktop -f $name:}$desk%{A}" ;;
             m*|M*)
               # monitor seperator
               wm_infos="$wm_infos%{F-}  " ;;

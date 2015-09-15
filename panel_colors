@@ -7,45 +7,17 @@ SCREENHEIGHT=$(xrandr -q | grep Screen | awk '{print $10}' | sed s/,//)
 SCREENWIDTH=$(xrandr -q | grep Screen | awk '{print $8}')
 BARWIDTH=$(($SCREENWIDTH - $(($EDGEWIDTH * 2))))
 
-#COLOR_FOREGROUND='#FFA3A6AB'
-COLOR_FOREGROUND='#FF34322E'
-COLOR_BACKGROUND='#95FFFFFF'
-COLOR_ACTIVE_MONITOR_FG='#FF34322E'
-COLOR_ACTIVE_MONITOR_BG='#8058C5F1'
-COLOR_INACTIVE_MONITOR_FG='#FF58C5F1'
-COLOR_INACTIVE_MONITOR_BG='#8034322E'
-COLOR_FOCUSED_OCCUPIED_FG='#FF808D49'
-COLOR_FOCUSED_OCCUPIED_BG='#805C5955'
-COLOR_FOCUSED_FREE_FG='#FF808D49'
-COLOR_FOCUSED_FREE_BG='#806D561C'
-COLOR_FOCUSED_URGENT_FG='#FF808D49'
-COLOR_FOCUSED_URGENT_BG='#80F9A299'
-COLOR_OCCUPIED_FG='#FF808D49'
-COLOR_OCCUPIED_BG='#8034322E'
-COLOR_FREE_FG='#FF6F7277'
-COLOR_FREE_BG='#8034322E'
-COLOR_URGENT_FG='#FFF9A299'
-COLOR_URGENT_BG='#8034322E'
-COLOR_LAYOUT_FG='#FFA3A6AB'
-COLOR_LAYOUT_BG='#8034322E'
-COLOR_TITLE_FG='#FF34322E'
-COLOR_TITLE_BG='#95FFFFFF'
-COLOR_STATUS_FG='#FF34322E'
-COLOR_STATUS_BG='#95FFFFFF'
-COLOR_GREEN='#FF808D49'
-COLOR_YELLOW='#FFB98D50'
-COLOR_BLUE='#FF506D79'
-COLOR_RED='#FFF3A6AB'
-
-
 ## colors, in the format "#<alpha><rr><gg><bb>" ##
-color_fg='#FF34322E'        # bar foreground
-color_bg='#95FFFFFF'        # bar background
-color_ic='#FF34322E'        # icon color
+COLOR_FG='#FF34322E'        # bar foreground
+COLOR_BG='#95FFFFFF'        # bar background
+COLOR_IC='#FF34322E'        # icon color
 # colors for workspaces
-color_01='#FF34322E'        # focused & occupied
-color_02='#FF34322E'        # focused & empty
-color_03='#FFFF0000'        # focused & urgent
-color_04='#FFFFFFFF'        # unfocused & empty
-color_05='#FFA3A6AB'        # unfocused & occupied
-color_06='#ffff0000'        # unfocused & urgent
+COLOR_01='#FF34322E'        # focused & occupied
+COLOR_02='#FF34322E'        # focused & empty
+COLOR_03='#FFFF0000'        # focused & urgent
+COLOR_04='#FFFFFFFF'        # unfocused & empty
+COLOR_05='#FFA3A6AB'        # unfocused & occupied
+COLOR_06='#FFFF0000'        # unfocused & urgent
+
+FONT="Source Code Pro-9"
+ICON="FontAwesome-11"

@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+# {PANEL_FIFO}$i=/tmp/panel-fifo
+# export PATH=$PATH:/home/murat/.config/bspwm/
+# export PATH=$PATH:~/.config/bspwm/
+# export {PANEL_FIFO} 
+
+
+if [ $(pgrep -cx panel) -gt 1 ] ; then
+	printf "%s\n" "The panel is already running." >&2
+	exit 1
+fi
+
+trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
+
+# [ -e "${PANEL_FIFO}$i" ] && rm "${PANEL_FIFO}$i"
+# mkfifo "${PANEL_FIFO}$i"
+. panel_colors
+bspc config top_padding $PANEL_HEIGHT
+
+CUR_Y_OFFSET=0
+
+num_mon=$(bspc query -M)
+[ "$HOSTNAME" = "" ] && num_mon="1 2"
+
+for i in $num_mon; do
+    # remove any open panel fifo, and then create one
+    [ -e "${PANEL_FIFO}$i" ] && rm "${PANEL_FIFO}$i"
+    mkfifo "${PANEL_FIFO}$i"
+
+    # This greps out the bspc control section of the current monitor we are on.
+    # The while loop in the middle appends 'W' to the start because the panel_bar
+    # script assumes input from a 'regular' bspc control --subscribe command
+    bspc control --subscribe > "${PANEL_FIFO}$i" &
+    # |\
+    #     grep -oE "[Mm]$i[^TM]*[TML]" --line-buffered |\
+    #     while read line; do echo W$line; done \
+    #         > "${PANEL_FIFO}$i" &
+
+    # title.sh allows for a tabbing feature like in i3, and handles multihead titles
+    # in a more natural manner, but can be a little more processor intensive.
+    # Substitute the xtitle command here if you just want the current active window
+    # name to be displayed.
+    # xtitle -sf 'T%s' > "${PANEL_FIFO}$i" &
+    xtitle -sf 'T%s%{A:bspc window -c:}x%{A}' -t 20 > "${PANEL_FIFO}$i" &
+    # title.sh $i > "${PANEL_FIFO}$i" &
+    # $(bspc query -W -d focused) | awk '{printf $0" "}'
+
+
+while [[ true ]]; do
+	cur_battery="$(acpi | awk '{print $4}' | tr -d ',%')"
+if [ "$cur_battery" -ge 0 ] && [ "$cur_battery" -le 15 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "${PANEL_FIFO}$i"
+elif [ "$cur_battery" -ge 16 ] &&  [ "$cur_battery" -le 25 ]; then
+printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "${PANEL_FIFO}$i"
+elif [ "$cur_battery" -ge 26 ] &&  [ "$cur_battery" -le 50 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "${PANEL_FIFO}$i"
+elif [ "$cur_battery" -ge 51 ] &&  [ "$cur_battery" -le 75 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "${PANEL_FIFO}$i"
+elif [ "$cur_battery" -ge 76 ] &&  [ "$cur_battery" -le 100 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "${PANEL_FIFO}$i"
+fi
+	sleep 20s;
+done &
+
+while [[ true ]]; do
+	#lang output
+	ln="$(xkb-switch)"
+	printf "L %.2s\n" "${ln}" > "${PANEL_FIFO}$i"
+	#focused window kill button
+	# com=$(bspc query -W -d focused | awk '{printf "%A{:bspc windows -f "$0":}<%A{} "}')
+	# if [ "$(bspc query -W -d focused)" ]
+ 	 	# then
+ 	# printf "X%s\n" "$com" > "${PANEL_FIFO}$i"
+	# else
+		# printf "X \n" > "${PANEL_FIFO}$i"
+ 	# fi
+  	#try to create trayer toggle
+ #  	if [[ -n $(pgrep trayer) ]]; 
+ #  	then
+ #    printf "R%s\n" " %{A:tra:}%{A}" > "${PANEL_FIFO}$i"
+	# else
+	# printf "R%s\n" " %{A:tra:}%{A}" > "${PANEL_FIFO}$i"
+ #  	fi
+ 
+	#volume
+  	vol="$( amixer get Master | tail -1| awk '{print $4}' | tr -d '[]')"
+	printf "V%s\n" "$vol" > "${PANEL_FIFO}$i"
+	sleep 0.5s;
+done &
+
+while [[ true ]]; do
+	printf "TE%2s\n" "$(sensors | grep -i 'Physical' | awk '{print $4+0}')" > "${PANEL_FIFO}$i"
+	sleep 5s;
+done &
+
+
+while [[ true ]]; do
+	printf "S%s\n" "$(date +"%d.%m")" > "${PANEL_FIFO}$i"
+	printf "C%s %s\n" "$(date -d "+3 hour" +"%R")" "$(date +"%R")" > "${PANEL_FIFO}$i"
+	sleep 30s;
+done &
+
+while [[ true ]]; do
+	weatherURL='http://www.accuweather.com/en/cz/prague/125594/weather-forecast/125594'
+    weth=$(wget -q -T 1 -O- "$weatherURL" | awk -F\' '/acm_RecentLocationsCarousel\.push/{print $12"°C" }'| head -1)
+    printf "E%s\n" "$weth" > "${PANEL_FIFO}$i"
+    updates=$(eval yaourt -Qu | wc --lines)
+    command='terminator -e "yaourt -Syua"'
+    printf "Y%s\n" "%{A:$command:}$updates %{A}" > "${PANEL_FIFO}$i"
+    sleep 1800s;
+done &
+
+    # # info.sh outputs system information.
+    # if [ -z "$(eval echo \$'barInfo'$i)" ]; then
+    #     info.sh $barInfo > "${PANEL_FIFO}$i" &
+    # else
+    #     #Custom bar options per monitor. (defined barInfo$i var for this monitor)
+    #     info.sh $(eval echo \$'barInfo'$i) > "${PANEL_FIFO}$i" &
+    # fi
+
+
+    # Grep for current monitor width (will be first number regex match from bspc query command below).
+    CUR_MON_HEIGHT=$(bspc query -T -m $i | grep -oE "[0-9]{2,6}" | head -n 2 | tail -1)
+    CUR_MON_WIDTH=$(bspc query -T -m $i | grep -oE "[0-9]{2,6}" | head -n 1)
+
+    # The nested expr statements account for gap settings and current offset.
+    # PANEL_GAP value is set in profile.
+    cat "${PANEL_FIFO}$i" | panel_bar |\
+        lemonbar -g $(($CUR_MON_WIDTH - $((2*$EDGEWIDTH))))x"$BARHEIGHT"+"${EDGEWIDTH}"+"${CUR_Y_OFFSET}" -f "$FONT" -f "$ICON" -u "$UNDERLINE_WIDTH" -F "$COLOR_FG" -B "$COLOR_BG"| sh &
+        # lemonbar -g $(($CUR_MON_WIDTH - $((2*$EDGEWIDTH))))x"$BARHEIGHT"+"$EDGEWIDTH"+"${CUR_Y_OFFSET}" -f "$FONT" -f "$ICON" -u "$UNDERLINE_WIDTH" -F "$COLOR_FG" -B "$COLOR_BG"| sh &
+        # lemonbar -g $(expr $CUR_MON_WIDTH - $(expr $EDGEWIDTH + $EDGEWIDTH))x$BARHEIGHT+$(expr $CUR_X_OFFSET + $EDGEWIDTH)+$EDGEWIDTH -f "$FONT" -f "$ICON"  -u $UNDERLINE_WIDTH -F "$COLOR_FG" -B "$COLOR_BG" | sh &
+# echo test >&
+    # Increment the x offset for the next monitor.
+    CUR_Y_OFFSET=$(($CUR_Y_OFFSET + $CUR_MON_HEIGHT))
+done
+wait
