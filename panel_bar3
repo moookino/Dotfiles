@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+#
+# Example panel for LemonBoy's bar
+
+. panel_colors
+
+export DO=
+export DF=
+dropdown="%{A:dzen_menu & :}    %{A}"
+menu="%{F$COLOR_FG}%{B$COLOR_BG}${dropdown}%{B-}%{F-}"
+num_mon=$(bspc query -M | wc -l)
+cal='%{A:cali:} %{A}'
+# lswtch='%{A:xkb-switch -n:}%{A}'
+winfocus='bspc window -f '
+
+while read -r line ; do
+	case $line in
+		Y*)
+			ya="${line#?}"
+			;;
+		V*)
+			#vol
+			vol="%{F$COLOR_FG}%{B$COLOR_BG}${line#?} %{B-}%{F-}"
+			;;
+		E*)
+			#vol
+			weth="%{F$COLOR_FG}%{B$COLOR_BG}${line#?} %{B-}%{F-}"
+			;;
+		W*)
+        wm_infos=""
+        IFS=':'
+        set -- ${line#?}
+        while [ $# -gt 0 ] ; do
+          item=${1}
+          name=${item#?}
+          desk=" $name "
+          case $item in
+            O*)
+              # focused occupied desktop
+              wm_infos="$wm_infos%{F${COLOR_BG}}%{B${COLOR_07}}%{A:bspc desktop -f $name:}$desk%{A}%{B-}" ;;
+            F*)
+              # focused empty desktop
+              wm_infos="$wm_infos%{F$COLOR_02}%{B${COLOR_07}}%{A:bspc desktop -f $name:}$desk%{A}%{B-}" ;;
+            U*)
+              # focused urgent desktop
+              wm_infos="$wm_infos%{F$COLOR_03}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+            o*)
+              # occupied desktop
+              wm_infos="$wm_infos%{U$COLOR_07}%{A:bspc desktop -f $name:}$desk%{A}%{U-}" ;;
+            f*)
+              # free desktop
+              wm_infos="$wm_infos%{F$COLOR_04}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+            LT)
+              # layout
+              wm_infos="$wm_infos%{F$COLOR_07} %{A:bspc desktop -l next:}${DO}%{A}" ;;
+            LM)
+              # layout
+              wm_infos="$wm_infos%{F$COLOR_07} %{A:bspc desktop -l next:}${DF}%{A}" ;;
+            u*)
+              # urgent desktop
+              wm_infos="$wm_infos%{F$COLOR_06}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+            m*|M*)
+              # monitor seperator
+              wm_infos="$wm_infos%{F-}  " ;;
+          esac
+          shift
+        done ;;
+	esac
+	echo "%{l}${menu}%{l}${wm_infos}\n%{l}${vol}\n%{l}${weth}\n%{l}${ya}\n"
+  done

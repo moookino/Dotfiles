@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# stupid dzen workaround.
+weatherURL1='http://www.accuweather.com/ru/ru/sterlitamak/287170/weather-forecast/287170'
+weth1=$(wget -q -T 1 -O- "$weatherURL1" | awk -F\' '/acm_RecentLocationsCarousel\.push/{print $12"°C" }'| head -1)    
+weatherURL2='http://www.accuweather.com/en/cz/prague/125594/weather-forecast/125594'
+weth2=$(wget -q -T 1 -O- "$weatherURL2" | awk -F\' '/acm_RecentLocationsCarousel\.push/{print $12"°C" }'| head -1)    
+ICON=FontAwesome-11
+sdw="& pkill dzen"
+(
+echo "Weather now"
+echo "Sterlitamak $weth1"
+echo "Prague $weth2"
+) | dzen2 -l 2 -fg "#60b48a" -bg "#34322e" -fn "Source Code Pro-9" -x 1050 -y 18 -w 150 -p 5 -sa l -e 'leaveslave=exit;onstart=uncollapse;button1=exit;button3=exit'

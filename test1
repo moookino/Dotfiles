@@ -1,0 +1,7 @@
+#!/bin/bash
+#echo $(xtitle -s -t20 $(bspc query -W -d focused | awk '{print $0" "}'))
+notify-send  echo "$( bspc query -W -d focused)"
+#xtitle -s -t 20 $(bspc query -W -d focused | awk -v test="$fc" 'test != $0') | awk '{printf $0" "}'
+# if [[ $(acpi -b) == *"Charging"* ]]
+# 	then echo tut
+# fi

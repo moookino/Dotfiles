@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+src="${HOME}/Pictures/"
+count=$(ls $src | wc -l)
+deepin-screenshot 
+if [ "$(ls $src | wc -l)" = "$count" ]
+	then notify-send "Nothing to upload"
+else
+	imgur-screenshot -l ${src}$(ls ${src} | grep Deepin | tail -1)
+fi

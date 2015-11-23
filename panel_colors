@@ -1,5 +1,5 @@
 BARHEIGHT=18
-EDGEWIDTH=7
+EDGEWIDTH=0
 UNDERLINE_WIDTH=2
 
 # Don't touch.  Edit width/height above instead.
@@ -8,16 +8,34 @@ SCREENWIDTH=$(xrandr -q | grep Screen | awk '{print $8}')
 BARWIDTH=$(($SCREENWIDTH - $(($EDGEWIDTH * 2))))
 
 ## colors, in the format "#<alpha><rr><gg><bb>" ##
-COLOR_FG='#FF34322E'        # bar foreground
-COLOR_BG='#95FFFFFF'        # bar background
-COLOR_IC='#FF34322E'        # icon color
-# colors for workspaces
-COLOR_01='#FF34322E'        # focused & occupied
-COLOR_02='#FF34322E'        # focused & empty
-COLOR_03='#FFFF0000'        # focused & urgent
-COLOR_04='#FFFFFFFF'        # unfocused & empty
-COLOR_05='#FFA3A6AB'        # unfocused & occupied
-COLOR_06='#FFFF0000'        # unfocused & urgent
+#COLOR_FG='#FF34322e'        # bar foreground
+#COLOR_BG='#95ffffff'        # bar background
+#COLOR_IC='#FF34322e'        # icon color
+## colors for workspaces
+#COLOR_01='#FF34322e'        # focused & occupied
+#COLOR_02='#FF34322e'        # focused & empty
+#COLOR_03='#FFff0000'        # focused & urgent
+#COLOR_04='#FFffffff'        # unfocused & empty
+#COLOR_05='#FFa3a6ab'        # unfocused & occupied
+#COLOR_06='#FFff0000'        # unfocused & urgent
 
-FONT="Source Code Pro-9"
-ICON="FontAwesome-11"
+## colors, in the format "#<alpha><rr><gg><bb>" ##
+COLOR_FG='#FFffffff'        # bar foreground
+
+COLOR_BG='#9534322e'        # bar background
+COLOR_IC='#FFffffff'        # icon color
+# colors for workspaces
+COLOR_01='#FFffffff'        # focused & occupied
+COLOR_02='#FFffffff'        # focused & empty
+COLOR_03='#FFff0000'        # focused & urgent
+COLOR_04='#9534322e'        # unfocused & empty
+COLOR_05='#FFa3a6ab'        # unfocused & occupied
+COLOR_06='#FFff0000'        # unfocused & urgent
+COLOR_07='#FF60b48a'
+
+COLOR_08="#ff444444"
+pPadding=1
+
+FONT='Source Code Pro-9'
+ICON='FontAwesome-11'
+ICON1='fontcustom-11'

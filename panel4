@@ -1,5 +1,6 @@
-#! /bin/sh
-
+#!/usr/bin/env bash
+PANEL_FIFO=/tmp/panel-fifo
+export PANEL_FIFO
 if [ $(pgrep -cx panel) -gt 1 ] ; then
 	printf "%s\n" "The panel is already running." >&2
 	exit 1
@@ -18,8 +19,8 @@ xtitle -sf 'T%s' > "$PANEL_FIFO" &
 while [[ true ]]; do
 	vol="$( amixer get Master | tail -1| awk '{print $4}' | tr -d '[]')"
 	printf "V%s\n" "$vol" > "$PANEL_FIFO"
-	apps="%{A:firefox:}%{A} %{A:thunar:}%{A} %{A:subl3:}%{A} %{A:terminator:}%{A} %{F#FFddccaa}"
-	printf "A%s\n" "$apps"> "$PANEL_FIFO"
+	# apps="%{A:firefox:}%{A} %{A:thunar:}%{A} %{A:subl3:}%{A} %{A:terminator:}%{A} %{F#FFddccaa}"
+	# printf "A%s\n" "$apps"> "$PANEL_FIFO"
 	sleep 0.5s;
 done &
 
@@ -95,6 +96,6 @@ done &
 font="Source Code Pro-9"
 icon="FontAwesome-11"
 
-cat "$PANEL_FIFO" | panel_bar | lemonbar -g "$BARWIDTH"x"$BARHEIGHT"+"$EDGEWIDTH" -f "$font" -f "$icon" -F "$COLOR_FOREGROUND" -B "$COLOR_BACKGROUND"  -u "$UNDERLINE_WIDTH" | while read line; do eval "$line"; done 
+cat "$PANEL_FIFO" | panel_bar | lemonbar -g "$BARWIDTH"x"$BARHEIGHT"+"$EDGEWIDTH"+1080 -f "$font" -f "$icon" -F "$COLOR_FG" -B "$COLOR_BG"  -u "$UNDERLINE_WIDTH" | while read line; do eval "$line"; done 
 
 wait

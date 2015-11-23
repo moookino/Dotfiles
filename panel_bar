@@ -3,16 +3,23 @@
 # Example panel for LemonBoy's bar
 
 . panel_colors
-menu='%{F$COLOR_FG}%{B$COLOR_BG}%{A:thunar:} %{A}%{A:thunar:}%{A}%{A:firefox:} %{A}%{A:subl3:} %{A}%{A:dropbox:} %{A} %{B-}%{F-}'
+
+export DO=
+export DF=
+dropdown="%{A:dzen_menu & :}    %{A}"
+menu="%{F$COLOR_FG}%{B$COLOR_BG}${dropdown}%{B-}%{F-}"
 num_mon=$(bspc query -M | wc -l)
-cal='%{A:cali:} %{A}'
-lswtch='%{A:xkb-switch -n:}%{A}'
+d_bat="%{A:dzen_bat:} %{A}"
+#cur_br="%{A4::}%{A5::}  %{A}%{A}"
+cal="%{A:cali:} %{A}"
+lswtch='%{A:xkb-switch -n:}%{A}'
+winfocus='bspc window -f '
 
 while read -r line ; do
 	case $line in
 		TE*)
 			# Sensor Output
-			temp="%{F$COLOR_FG}%{B$COLOR_BG} ${line:2:2} %{B-}%{F-}"
+			temp="%{F$COLOR_FG}%{B$COLOR_BG} ${line:2:2}%{B-}%{F-}"
 			size+=${#temp}
 			;;
 		R*)
@@ -32,18 +39,34 @@ while read -r line ; do
 
 			clock="%{F$COLOR_FG}%{B$COLOR_BG}  ${line#?}%{B-}%{F-}"
 			;;
-		X*)
-
-			wkill="%{F$COLOR_FG}%{B$COLOR_BG}${line#?}%{B-}%{F-}"
-			;;
 		B*)
 			#Battery Output
-			bat="%{F$COLOR_FG}%{B$COLOR_BG}${line#?} %{B-}%{F-}"
+			bat="%{F$COLOR_FG}%{B$COLOR_BG}${d_bat}${line#?} %{B-}%{F-}"
 			;;
-		T*)
-			# xtitle output
-			title="%{F$COLOR_04}%{B$COLOR_05}${line#?}%{B-}%{F-}"
-			;;
+    T*)
+        title="${line#?}"
+        ;;
+		  # T*)
+    #     title=""
+    #     IFS='\'
+    #     set -- ${line#?}
+    #     while [ $# -gt 0 ] ; do
+    #         item=$1
+    #         name=${item#?}
+    #         # form of $name will be window title // window id.
+    #         # split and use for clickable focus areas
+    #         winTitle="$(echo $name | grep -oE ".*//" | rev | cut -c 3- | rev)"
+    #         winID="$(echo $name | grep -oE "//.*" | cut -c 3-)"
+    #         if [ ! -z $winTitle ]; then
+    #             case $item in
+    #                 A*) blockActive=true && title="%{F$COLOR_FG}${title}$(block $winTitle)%{B$COLOR_BG}";; #active window
+    #                 X*) blockActive=false && title="%{F$COLOR_FG}${title}$(block %{A:${winfocus} ${winID}:}${winTitle}%{A})%{B$COLOR_BG}";; #inactive window
+    #             esac
+    #         fi
+    #         # title="$title"
+    #         shift
+    #     done
+    # ;;
 		A*)
 			apps="${line#?}"
 			;;
@@ -56,7 +79,7 @@ while read -r line ; do
 			;;
 		E*)
 			#vol
-			weth="%{F$COLOR_FG}%{B$COLOR_BG}${line#?} %{B-}%{F-}"
+			weth="%{F$COLOR_FG}%{B$COLOR_BG}%{A:dzen_weather:}${line#?} %{A}%{B-}%{F-}"
 			;;
 		W*)
         wm_infos=""
@@ -69,19 +92,25 @@ while read -r line ; do
           case $item in
             O*)
               # focused occupied desktop
-              wm_infos="$wm_infos%{F${COLOR_01}}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F${COLOR_07}}%{U$COLOR_07}%{+u}%{A:bspc desktop -f $name:}$desk%{-u}%{A}" ;;
             F*)
               # focused empty desktop
-              wm_infos="$wm_infos%{F$COLOR_02}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F$COLOR_07}%{U${COLOR_07}}%{+u}%{A:bspc desktop -f $name:}$desk%{A}%{-u}" ;;
             U*)
               # focused urgent desktop
-              wm_infos="$wm_infos%{F$COLOR_03}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F$COLOR_BG}%{U${COLOR_07}}%%{A:bspc desktop -f $name:}$desk%{A}%{-u}" ;;
             o*)
               # occupied desktop
-              wm_infos="$wm_infos%{F$COLOR_04}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F$COLOR_07}%{A:bspc desktop -f $name:}$desk%{A}" ;;
             f*)
               # free desktop
-              wm_infos="$wm_infos%{F$COLOR_05}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+              wm_infos="$wm_infos%{F$COLOR_04}%{A:bspc desktop -f $name:}$desk%{A}" ;;
+            LT)
+              # layout
+              wm_infos="$wm_infos%{F$COLOR_07} %{A:bspc desktop -l next:}${DO}%{A}" ;;
+            LM)
+              # layout
+              wm_infos="$wm_infos%{F$COLOR_07} %{A:bspc desktop -l next:}${DF}%{A}" ;;
             u*)
               # urgent desktop
               wm_infos="$wm_infos%{F$COLOR_06}%{A:bspc desktop -f $name:}$desk%{A}" ;;
@@ -94,5 +123,6 @@ while read -r line ; do
 	esac
 	# printf "%s\n" "%{l}${title}${icon}%{c}${wm_infos}${apps}%{r}${vol}${temp}${pow}${bat}${cal}${sys_infos}"
 	# echo $(echo ${vol}${temp}${pow}${bat}${weth}${ya}${lswtch}${lang}${cal}${date}${clock}${tr} | wc -m)
-	printf "%s\n" "%{l}${title}${wkill}${icon}%{c}${wm_infos} ${menu}%{r}${vol}${temp}${bat}${weth}${ya}${lswtch}${lang}${cal}${date}${clock}${tr}"
-done
+	printf "%s\n" "%{l}${menu}${title}${wkill}${icon}%{c}${wm_infos} %{r}${vol}${temp}${bat}${weth}${ya}${lswtch}${lang}${cal}${date}${clock}${tr}"
+	# printf "%s\n" "%{r}${vol}${temp}${bat}${weth}${ya}${lswtch}${lang}${cal}${date}${clock}${tr}"
+  done

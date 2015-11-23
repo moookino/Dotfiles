@@ -15,11 +15,13 @@ XPOS=$EDGEWIDTH
 YPOS=$(($(($SCREENHEIGHT / 2)) - 15))
 
 FGSELECT="#A3A6AB"
-BGSELECT="#8C9440"
+BGSELECT="#60b48a"
+#BGSELECT="#8C9440"
 FG="#6F7277"
 BG="#34322E"
 FONT="-*-stlarch-*-*-*-*-*-*-*-*-*-*-*-*"
 HIST="/home/murat/.config/bspwm/history"
+xkb-switch -s us;
 # echo -e "a\n3|b\n4|c\n5" | rofi -sep '|' -eh 2 -dmenu
 # rofi -show run ">" -lines 1 -columns 10 -opacity "95" -width $DMENUWIDTH -bg "#FFFFFF" -fg "#34322E" -hlbg $BGSELECT -hlfg $FGSELECT
 dmenu_run -w $DMENUWIDTH -x $XPOS -y $YPOS -fn ${FONT} -nb $BG -nf $FG -sb $BGSELECT -p ">" -dim 0.60 -hist ${HIST}

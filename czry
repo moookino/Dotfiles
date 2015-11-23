@@ -1,0 +1,6 @@
+#!/bin/bash
+case "$(xkb-switch -p)" in
+  cz   ) xkb-switch -s ru;;
+  ru   ) xkb-switch -s "cz(qwerty)";;
+  *    ) xkb-switch -s "cz(qwerty)";;
+esac

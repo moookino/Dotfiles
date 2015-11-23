@@ -1,0 +1,12 @@
+#!/bin/bash
+
+pBG=34322e
+pFG=ffffff
+pBGActiveTab="a4a6ab"
+
+eval $(xdotool getmouselocation --shell)
+
+# set the alignment(default to center)
+[[ -z $align ]] && align=c
+
+echo -l 10 -fg \"#$pFG\" -bg \"#$pBG\" -fn \"$FONT\" -x 1366 -y 0 -w 200 -p 5 -sa l -e \'onstart=uncollapse\;button1=menuprint,exit\;button3=exit\;button4=scrollup\;button5=scrolldown\' -m v

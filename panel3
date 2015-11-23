@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+PANEL_FIFO=/tmp/panel-fifo
+export PANEL_FIFO
+if [ $(pgrep -cx panel) -gt 1 ] ; then
+	printf "%s\n" "The panel is already running." >&2
+	exit 1
+fi
+
+trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
+
+[ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
+mkfifo "$PANEL_FIFO"
+. panel_colors
+
+bspc config top_padding $PANEL_HEIGHT
+bspc control --subscribe > "$PANEL_FIFO" &
+xtitle -t 20 -sf 'T%s' > "$PANEL_FIFO" &
+
+while [[ true ]]; do
+	vol="$( amixer get Master | tail -1| awk '{print $4}' | tr -d '[]')"
+	printf "V%s\n" "$vol" > "$PANEL_FIFO"
+	# apps="%{A:firefox:}%{A} %{A:thunar:}%{A} %{A:subl3:}%{A} %{A:terminator:}%{A} %{F#FFddccaa}"
+	# printf "A%s\n" "$apps"> "$PANEL_FIFO"
+	sleep 0.5s;
+done &
+
+
+while [[ true ]]; do
+	cur_battery="$(acpi | awk '{print $4}' | tr -d ',%')"
+if [ "$cur_battery" -ge 0 ] && [ "$cur_battery" -le 15 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "$PANEL_FIFO"
+elif [ "$cur_battery" -ge 16 ] &&  [ "$cur_battery" -le 25 ]; then
+printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "$PANEL_FIFO"
+elif [ "$cur_battery" -ge 26 ] &&  [ "$cur_battery" -le 50 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "$PANEL_FIFO"
+elif [ "$cur_battery" -ge 51 ] &&  [ "$cur_battery" -le 75 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "$PANEL_FIFO"
+elif [ "$cur_battery" -ge 76 ] &&  [ "$cur_battery" -le 100 ]; then
+  printf "B %s\n" "%{A:bat:}%{A} ${cur_battery}%" > "$PANEL_FIFO"
+fi
+	sleep 20s;
+done &
+
+while [[ true ]]; do
+	ln="$(xkb-switch)"
+	printf "L %.2s\n" "${ln}" > "$PANEL_FIFO"
+	if [ "`bspc query -d focused -W`" ]
+  	then
+    printf "X %s\n" "%{A:bspc window -c:}%{A}" > "$PANEL_FIFO"
+	else
+		printf "X \n" > "$PANEL_FIFO"
+  	fi
+
+  	if [[ -n $(pgrep trayer) ]]; 
+  	then
+    printf "R%s\n" " %{A:tra:}%{A}" > "$PANEL_FIFO"
+	else
+	printf "R%s\n" " %{A:tra:}%{A}" > "$PANEL_FIFO"
+  	fi
+	sleep 0.5s;
+done &
+
+while [[ true ]]; do
+	#add 0 to $2 to make int 
+	printf "TE%2s\n" "$(sensors | grep -i 'Physical' | awk '{print $4+0}')" > "$PANEL_FIFO"
+	sleep 5s;
+done &
+
+
+# while [[ true ]]; do
+# 	#add 0 to $2 to make int 
+# 	echo "%{A:firefox:}%{A} %{A:urxvt -e ncmpcpp:}%{A} %{A:pcmanfm:}%{A} %{A:libreoffice:}%{A} %{A:urxvt:}%{A} $fg"
+# 	printf "TE%2s\n" "$(sensors | grep -i 'Physical' | awk '{print $4+0}')" > "$PANEL_FIFO"
+# 	sleep 5s;
+# done &
+
+while [[ true ]]; do
+	printf "S%s\n" "$(date +"%d.%m")" > "$PANEL_FIFO"
+	printf "C%s %s\n" "$(date -d "+3 hour" +"%R")" "$(date +"%R")" > "$PANEL_FIFO"
+	sleep 30s;
+done &
+
+while [[ true ]]; do
+	weatherURL='http://www.accuweather.com/en/cz/prague/125594/weather-forecast/125594'
+    weth=$(wget -q -T 1 -O- "$weatherURL" | awk -F\' '/acm_RecentLocationsCarousel\.push/{print $12"°C" }'| head -1)
+    printf "E%s\n" "$weth" > "$PANEL_FIFO"
+    updates=$(eval yaourt -Qu | wc --lines)
+    command='terminator -e "yaourt -Syua"'
+    printf "Y%s\n" "%{A:$command:}$updates %{A}" > "$PANEL_FIFO"
+    sleep 1800s;
+done &
+# AC='%{A:'           # start click area
+# AB=':}'             # end click area cmd
+# AE='%{A}'
+
+font="Source Code Pro-9"
+icon="FontAwesome-11"
+
+cat "$PANEL_FIFO" | panel_bar3 | lemonbar -g 30x768+10 -f "$font" -f "$icon" -F "$COLOR_FG" -B "$COLOR_BG" | while read line; do eval "$line"; done 
+
+wait

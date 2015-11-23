@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+# autorandr -c;
+bspc config top_padding 18;
+bspc monitor -n 1 -d     ;
+bspc monitor VGA1 -n 2 -d  
+bspc monitor HDMI1 -n 3 -d  
+bspc monitor DP1 -n 4 -d  
+pkill -x trayer;
+killall -9 bash;
+killall -9 bspc
+killall -9 sleep
+killall -9 perl
+#killall -9 sxhkd
+# kill -HUP $(ps -A -ostat,ppid |  awk '/[zZ]/{print $2}')
+#export SXHKD_SHELL=/usr/bin/bash
+#sxhkd -f 100 -c /home/$USER/.config/sxhkd/sxhkdrc
+panel2 &
+sleep 3 && trayer --edge top --align right  --widthtype request --width 30 --height 18 --transparent true --alpha 95 --tint 0x9534322E --distance 420 --distancefrom right  --monitor 1 &
+
+perl /usr/local/share/xSwipe/xSwipe.pl -m 30 -d 0.5 &

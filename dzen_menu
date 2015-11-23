@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# stupid dzen workaround.
+ICON=FontAwesome-11
+sdw="& pkill dzen"
+(
+echo "^fg(#60b48a)Common folders^fg()"
+echo "^ca(1, thunar "$HOME/Downloads" ) Downloads ^ca()"
+echo "^ca(1, thunar "$HOME/Documents" $sdw) Documents ^ca()"
+echo "^ca(1, thunar "$HOME/Pictures" $sdw) Images ^ca()"
+echo " Actions"
+echo "^ca(1, thunar $sdw) ^fn($ICON)  ^fn() Thunar ^ca()"
+echo "^ca(1, terminator $sdw) ^fn($ICON)  ^fn() Terminal ^ca()"
+echo "^ca(1, vlc $sdw) ^fn($ICON)  ^fn() Vlc ^ca()"
+echo "^ca(1, firefox $sdw) ^fn($ICON)  ^fn() Firefox ^ca()"
+echo "^ca(1, subl3 $sdw) ^fn($ICON)  ^fn() Sublime ^ca()"
+echo "^ca(1, dropbox $sdw) ^fn($ICON)  ^fn() Dropbox ^ca()"
+echo " Actions"
+echo "^ca(1, block $sdw) ^fn($ICON) $(echo -n -e "\uf023") ^fn() Lock ^ca()"
+echo "^ca(1, bspc quit) ^fn($ICON) $(echo -n -e "\uf08b") ^fn() Logoff ^ca()"
+echo "^ca(1, systemctl reboot $sdw) ^fn($ICON) $(echo -n -e "\uf0e2") ^fn() Reboot ^ca()"
+echo "^ca(1, systemctl poweroff $sdw) ^fn($ICON) $(echo -n -e "\uf011") ^fn() Shutdown ^ca()"
+) | dzen2 -l 14 -fg "#ffffff" -bg "#34322e" -fn "Source Code Pro-9" -x 7 -y 18 -w 200 -p 5 -sa l -e 'leaveslave=exit;onstart=uncollapse;button1=menuprint,exit;button3=exit;button4=scrollup;button5=scrolldown' -m v

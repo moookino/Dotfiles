@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+. panel_colors
+CUR_MON=$1;
+maxWinNameLen=20
+winfocus='bspc window -f '
+# winlayer='bspc window --layer below '
+winlayer=''
+# CUR_MON_DESK=$( bspc query --monitor ^$CUR_MON -T )
+update(){
+CUR_MON_F=$(bspc query -d focused -T | grep "\-- \*$" | cut -d " " -f 4)
+CUR_MON_NF=$(bspc query -d focused -T | grep "\--$" | cut -d " " -f 4)
+if [ ! -z $CUR_MON_NF ]||[ ! -z $CUR_MON_F ]; then
+# echo $CUR_MON_NF
+# echo $CUR_MON_F
+winName="$(xtitle -t $maxWinNameLen "$CUR_MON_F")";
+echo "T %{F$COLOR_FG}%{B$COLOR_08}%{O$COLOR_FG}%{+o}%{A:${winlayer} ${item}:}${winName}%{A}%{-o}%{B-}%{F-}";
+for item in $CUR_MON_NF; do
+echo -n "%{F$COLOR_FG}%{B$COLOR_08}%{A:${winfocus} ${item}:}$(xtitle -t $maxWinNameLen "$item")%{A}%{B-}%{F-} ";
+done
+else
+	echo -n "T "
+fi
+}
+bspc control --subscribe window | while read line; do
+	windows=$(update)
+	echo $windows
+done
