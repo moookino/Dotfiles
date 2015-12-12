@@ -20,7 +20,7 @@ BGSELECT="#60b48a"
 FG="#6F7277"
 BG="#34322E"
 FONT="-*-stlarch-*-*-*-*-*-*-*-*-*-*-*-*"
-HIST="/home/murat/.config/bspwm/history"
+HIST="${HOME}/.config/bspwm/history"
 xkb-switch -s us;
 # echo -e "a\n3|b\n4|c\n5" | rofi -sep '|' -eh 2 -dmenu
 # rofi -show run ">" -lines 1 -columns 10 -opacity "95" -width $DMENUWIDTH -bg "#FFFFFF" -fg "#34322E" -hlbg $BGSELECT -hlfg $FGSELECT
